@@ -2,9 +2,14 @@ package br.com.dio.picapays.entities;
 
 import br.com.dio.picapays.enums.TipoPermissao;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 @Data
@@ -14,7 +19,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "USUARIOS")
-public class Usuario extends EntidadeBase {
+public class Usuario extends EntidadeBase implements UserDetails {
 
     private static final long serialVersionUID = 1L;
 
@@ -51,4 +56,42 @@ public class Usuario extends EntidadeBase {
     @Enumerated(EnumType.STRING)
     @Column(name = "USU_PERMISSAO", nullable = false)
     private TipoPermissao permissao;
+
+
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Arrays.asList(new SimpleGrantedAuthority(permissao.getCodigo()));
+    }
+
+    @Override
+    public String getPassword() {
+        return senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return login;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.ativo;
+    }
 }
